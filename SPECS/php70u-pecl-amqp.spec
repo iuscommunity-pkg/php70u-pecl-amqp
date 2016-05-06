@@ -1,3 +1,5 @@
+# IUS spec file for php70u-pecl-amqp, forked from:
+#
 # Fedora spec file for php-pecl-amqp
 #
 # Copyright (c) 2012-2016 Remi Collet
@@ -9,20 +11,21 @@
 %global with_zts    0%{?__ztsphp:1}
 %global with_tests  0%{?_with_tests:1}
 %global pecl_name   amqp
+%global php_base    php70u
 %global ini_name    40-%{pecl_name}.ini
 #global prever      beta4
 
 Summary:       Communicate with any AMQP compliant server
-Name:          php-pecl-amqp
+Name:          %{php_base}-pecl-amqp
 Version:       1.7.0
-Release:       1%{?dist}
+Release:       1.ius%{?dist}
 License:       PHP
 Group:         Development/Languages
 URL:           http://pecl.php.net/package/amqp
 Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
-BuildRequires: php-devel > 5.2.0
-BuildRequires: php-pear
+BuildRequires: %{php_base}-devel
+BuildRequires: %{php_base}-pear
 BuildRequires: librabbitmq-devel >= 0.5.2
 %if %{with_tests}
 BuildRequires: rabbitmq-server
@@ -31,10 +34,30 @@ BuildRequires: rabbitmq-server
 Requires:      php(zend-abi) = %{php_zend_api}
 Requires:      php(api) = %{php_core_api}
 
-Provides:      php-%{pecl_name}               = %{version}
-Provides:      php-%{pecl_name}%{?_isa}       = %{version}
-Provides:      php-pecl(%{pecl_name})         = %{version}
+# provide the stock name
+Provides:      php-pecl-%{pecl_name} = %{version}
+Provides:      php-pecl-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names without pecl
+Provides:      php-%{pecl_name} = %{version}
+Provides:      php-%{pecl_name}%{?_isa} = %{version}
+Provides:      %{php_base}-%{pecl_name} = %{version}
+Provides:      %{php_base}-%{pecl_name}%{?_isa} = %{version}
+
+# provide the stock and IUS names in pecl() format
+Provides:      php-pecl(%{pecl_name}) = %{version}
 Provides:      php-pecl(%{pecl_name})%{?_isa} = %{version}
+Provides:      %{php_base}-pecl(%{pecl_name}) = %{version}
+Provides:      %{php_base}-pecl(%{pecl_name})%{?_isa} = %{version}
+
+# conflict with the stock name
+Conflicts:     php-pecl-%{pecl_name} < %{version}
+
+# RPM 4.8
+%{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_setup}
+# RPM 4.9
+%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
 
 
 %description
@@ -199,6 +222,7 @@ exit $ret
 
 
 %files
+%{!?_licensedir:%global license %%doc}
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
@@ -213,6 +237,9 @@ exit $ret
 
 
 %changelog
+* Fri May 06 2016 Carl George <carl.george@rackspace.com> - 1.7.0-1.ius
+- Port from Fedora to IUS
+
 * Tue Apr 26 2016 Remi Collet <remi@fedoraproject.org> - 1.7.0-1
 - update to 1.7.0 (php 5 and 7, stable)
 
