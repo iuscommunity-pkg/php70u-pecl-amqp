@@ -78,7 +78,7 @@ sed -e 's/role="test"/role="src"/' \
     -i package.xml
 
 mv %{pecl_name}-%{version}%{?prever} NTS
-cd NTS
+pushd NTS
 sed -e 's/CFLAGS="-I/CFLAGS="$CFLAGS -I/' -i config.m4
 
 # Upstream often forget to change this
@@ -87,7 +87,7 @@ if test "x${extver}" != "x%{version}%{?prever}"; then
    : Error: Upstream version is ${extver}, expecting %{version}%{?prever}.
    exit 1
 fi
-cd ..
+popd
 
 cat > %{ini_name} << 'EOF'
 ; Enable %{pecl_name} extension module
@@ -136,16 +136,18 @@ cp -pr NTS ZTS
 
 
 %build
-cd NTS
+pushd NTS
 %{_bindir}/phpize
 %configure --with-php-config=%{_bindir}/php-config
 make %{?_smp_mflags}
+popd
 
 %if %{with_zts}
-cd ../ZTS
+pushd ZTS
 %{_bindir}/zts-phpize
 %configure --with-php-config=%{_bindir}/zts-php-config
 make %{?_smp_mflags}
+popd
 %endif
 
 
@@ -164,10 +166,11 @@ install -Dpm 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 %endif
 
 # Documentation
-cd NTS
+pushd NTS
 for i in $(grep 'role="doc"' ../package.xml | sed -e 's/^.*name="//;s/".*$//')
 do install -Dpm 644 $i %{buildroot}%{pecl_docdir}/%{pecl_name}/$i
 done
+popd
 
 
 %check
