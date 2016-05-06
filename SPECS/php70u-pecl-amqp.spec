@@ -154,7 +154,7 @@ make -C NTS install INSTALL_ROOT=%{buildroot}
 install -Dpm 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 # Install XML package description
-install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 %if %{with_zts}
 make -C ZTS install INSTALL_ROOT=%{buildroot}
@@ -225,7 +225,7 @@ exit $ret
 %{!?_licensedir:%global license %%doc}
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
-%{pecl_xmldir}/%{name}.xml
+%{pecl_xmldir}/%{pecl_name}.xml
 
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
@@ -239,6 +239,7 @@ exit $ret
 %changelog
 * Fri May 06 2016 Carl George <carl.george@rackspace.com> - 1.7.0-1.ius
 - Port from Fedora to IUS
+- Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
 
 * Tue Apr 26 2016 Remi Collet <remi@fedoraproject.org> - 1.7.0-1
 - update to 1.7.0 (php 5 and 7, stable)
