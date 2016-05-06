@@ -33,6 +33,8 @@ BuildRequires: rabbitmq-server
 
 Requires:      php(zend-abi) = %{php_zend_api}
 Requires:      php(api) = %{php_core_api}
+Requires(post):   %{php_base}-pear
+Requires(postun): %{php_base}-pear
 
 # provide the stock name
 Provides:      php-pecl-%{pecl_name} = %{version}
@@ -221,6 +223,20 @@ exit $ret
 %endif
 
 
+%post
+%if 0%{?pecl_install:1}
+%{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
+%endif
+
+
+%postun
+%if 0%{?pecl_uninstall:1}
+if [ $1 -eq 0 ]; then
+  %{pecl_uninstall} %{pecl_name} >/dev/null || :
+fi
+%endif
+
+
 %files
 %{!?_licensedir:%global license %%doc}
 %license NTS/LICENSE
@@ -240,6 +256,7 @@ exit $ret
 * Fri May 06 2016 Carl George <carl.george@rackspace.com> - 1.7.0-1.ius
 - Port from Fedora to IUS
 - Install package.xml as %%{pecl_name}.xml, not %%{name}.xml
+- Re-add scriptlets (file triggers not yet available in EL)
 
 * Tue Apr 26 2016 Remi Collet <remi@fedoraproject.org> - 1.7.0-1
 - update to 1.7.0 (php 5 and 7, stable)
