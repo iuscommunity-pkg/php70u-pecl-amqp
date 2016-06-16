@@ -226,14 +226,14 @@ exit $ret
 %endif
 
 
-%post
 %if 0%{?pecl_install:1}
+%post
 %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
 %endif
 
 
-%postun
 %if 0%{?pecl_uninstall:1}
+%postun
 if [ $1 -eq 0 ]; then
   %{pecl_uninstall} %{pecl_name} >/dev/null || :
 fi
@@ -258,6 +258,7 @@ fi
 %changelog
 * Thu Jun 16 2016 Carl George <carl.george@rackspace.com> - 1.7.0-2.ius
 - Clean up auto-provides filters
+- Move %%post and %%postun inside conditional to avoid empty scriptlets
 
 * Fri May 06 2016 Carl George <carl.george@rackspace.com> - 1.7.0-1.ius
 - Port from Fedora to IUS
