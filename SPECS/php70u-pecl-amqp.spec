@@ -8,12 +8,14 @@
 #
 # Please, preserve the changelog entries
 #
-%global with_zts    0%{?__ztsphp:1}
-%global with_tests  0%{?_with_tests:1}
+
 %global pecl_name   amqp
 %global php_base    php70u
 %global ini_name    40-%{pecl_name}.ini
 #global prever      beta4
+
+%bcond_without zts
+%bcond_without tests
 
 Summary:       Communicate with any AMQP compliant server
 Name:          %{php_base}-pecl-amqp
@@ -27,7 +29,7 @@ Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 BuildRequires: %{php_base}-devel
 BuildRequires: %{php_base}-pear
 BuildRequires: librabbitmq-devel >= 0.5.2
-%if %{with_tests}
+%if %{with tests}
 BuildRequires: rabbitmq-server
 %endif
 
@@ -128,7 +130,7 @@ extension = %{pecl_name}.so
 ;amqp.heartbeat = 0
 EOF
 
-%if %{with_zts}
+%if %{with zts}
 cp -pr NTS ZTS
 %endif
 
@@ -140,7 +142,7 @@ pushd NTS
 make %{?_smp_mflags}
 popd
 
-%if %{with_zts}
+%if %{with zts}
 pushd ZTS
 %{_bindir}/zts-phpize
 %configure --with-php-config=%{_bindir}/zts-php-config
@@ -158,7 +160,7 @@ install -Dpm 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 # Install XML package description
 install -Dpm 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
-%if %{with_zts}
+%if %{with zts}
 make -C ZTS install INSTALL_ROOT=%{buildroot}
 install -Dpm 644 %{ini_name} %{buildroot}%{php_ztsinidir}/%{ini_name}
 %endif
@@ -177,14 +179,14 @@ popd
     --define extension=NTS/modules/%{pecl_name}.so \
     -m | grep %{pecl_name}
 
-%if %{with_zts}
+%if %{with zts}
 : Minimal load test for ZTS extension
 %{__ztsphp} --no-php-ini \
     --define extension=ZTS/modules/%{pecl_name}.so \
     -m | grep %{pecl_name}
 %endif
 
-%if %{with_tests}
+%if %{with tests}
 mkdir log run base
 : Launch the RabbitMQ service
 export RABBITMQ_PID_FILE=$PWD/run/pid
@@ -203,7 +205,7 @@ REPORT_EXIT_STATUS=1 \
 %{__php} -n run-tests.php --show-diff || ret=1
 popd
 
-%if %{with_zts}
+%if %{with zts}
 pushd ZTS
 : Run the upstream test Suite for ZTS extension
 TEST_PHP_EXECUTABLE=%{__ztsphp} \
@@ -247,7 +249,7 @@ fi
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
 
-%if %{with_zts}
+%if %{with zts}
 %config(noreplace) %{php_ztsinidir}/%{ini_name}
 %{php_ztsextdir}/%{pecl_name}.so
 %endif
