@@ -1,0 +1,12 @@
+diff -Naurp a/amqp-1.7.0/tests/amqpqueue_delete_basic.phpt b/amqp-1.7.0/tests/amqpqueue_delete_basic.phpt
+--- a/amqp-1.7.0/tests/amqpqueue_delete_basic.phpt	2016-04-26 09:00:45.000000000 -0500
++++ b/amqp-1.7.0/tests/amqpqueue_delete_basic.phpt	2016-06-21 15:00:06.116412578 -0500
+@@ -1,7 +1,7 @@
+ --TEST--
+ AMQPQueue
+ --SKIPIF--
+-<?php if (!extension_loaded("amqp")) print "skip"; ?>
++<?php print "skip"; ?>
+ --FILE--
+ <?php
+ $cnn = new AMQPConnection();

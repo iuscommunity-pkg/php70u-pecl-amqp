@@ -26,11 +26,20 @@ Group:         Development/Languages
 URL:           http://pecl.php.net/package/amqp
 Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
+# Several tests fail due to using an older RabbitMQ server from EPEL6/7
+Patch1:        skip-amqpchannel_basicRecover.patch
+Patch2:        skip-amqpexchange_unbind.patch
+Patch3:        skip-amqpqueue_delete_basic.patch
+Patch4:        skip-bug_gh155_direct_reply_to.patch
+
 BuildRequires: %{php_base}-devel
 BuildRequires: %{php_base}-pear
 BuildRequires: librabbitmq-devel >= 0.5.2
 %if %{with tests}
 BuildRequires: rabbitmq-server
+%if 0%{?rhel} && 0%{?rhel} >= 7
+BuildRequires: hostname
+%endif
 %endif
 
 Requires:      php(zend-abi) = %{php_zend_api}
@@ -71,6 +80,17 @@ from any queue.
 
 %prep
 %setup -q -c
+
+%if 0%{?rhel} && 0%{?rhel} <= 6
+# EPEL6 has rabbitmq-server 3.1.5
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%endif
+%if 0%{?rhel} && 0%{?rhel} <= 7
+# EPEL7 has rabbitmq-server 3.3.5
+%patch4 -p1
+%endif
 
 # Don't install/register tests
 sed -e 's/role="test"/role="src"/' \
@@ -259,6 +279,7 @@ fi
 * Thu Jun 16 2016 Carl George <carl.george@rackspace.com> - 1.7.0-2.ius
 - Clean up auto-provides filters
 - Move %%post and %%postun inside conditional to avoid empty scriptlets
+- Enable upstream test suite, but skip some tests
 
 * Fri May 06 2016 Carl George <carl.george@rackspace.com> - 1.7.0-1.ius
 - Port from Fedora to IUS
