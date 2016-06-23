@@ -15,7 +15,7 @@
 #global prever      beta4
 
 %bcond_without zts
-%bcond_without tests
+%bcond_with tests
 
 Summary:       Communicate with any AMQP compliant server
 Name:          %{php_base}-pecl-amqp
@@ -26,17 +26,12 @@ Group:         Development/Languages
 URL:           http://pecl.php.net/package/amqp
 Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
-# Several tests fail due to using an older RabbitMQ server from EPEL6/7
-Patch1:        skip-amqpchannel_basicRecover.patch
-Patch2:        skip-amqpexchange_unbind.patch
-Patch3:        skip-amqpqueue_delete_basic.patch
-Patch4:        skip-bug_gh155_direct_reply_to.patch
-
 BuildRequires: %{php_base}-devel
 BuildRequires: %{php_base}-pear
 BuildRequires: librabbitmq-devel >= 0.5.2
 %if %{with tests}
-BuildRequires: rabbitmq-server
+# https://github.com/pdezwart/php-amqp/pull/234
+BuildRequires: rabbitmq-server >= 3.4.0
 %if 0%{?rhel} && 0%{?rhel} >= 7
 BuildRequires: hostname
 %endif
@@ -80,17 +75,6 @@ from any queue.
 
 %prep
 %setup -q -c
-
-%if 0%{?rhel} && 0%{?rhel} <= 6
-# EPEL6 has rabbitmq-server 3.1.5
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%endif
-%if 0%{?rhel} && 0%{?rhel} <= 7
-# EPEL7 has rabbitmq-server 3.3.5
-%patch4 -p1
-%endif
 
 # Don't install/register tests
 sed -e 's/role="test"/role="src"/' \
@@ -281,11 +265,11 @@ fi
 
 
 %changelog
-* Thu Jun 16 2016 Carl George <carl.george@rackspace.com> - 1.7.0-2.ius
+* Thu Jun 23 2016 Carl George <carl.george@rackspace.com> - 1.7.0-2.ius
 - Clean up auto-provides filters
 - Move %%post and %%postun inside conditional to avoid empty scriptlets
-- Enable upstream test suite, but skip some tests
 - Use a random port and node name to avoid conflicts during test suite
+- Set minimum rabbitmq-server version for test suite
 
 * Fri May 06 2016 Carl George <carl.george@rackspace.com> - 1.7.0-1.ius
 - Port from Fedora to IUS
