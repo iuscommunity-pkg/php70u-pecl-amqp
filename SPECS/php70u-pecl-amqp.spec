@@ -19,8 +19,8 @@
 
 Summary:       Communicate with any AMQP compliant server
 Name:          %{php_base}-pecl-amqp
-Version:       1.7.0
-Release:       2.ius%{?dist}
+Version:       1.7.1
+Release:       1.ius%{?dist}
 License:       PHP
 Group:         Development/Languages
 URL:           http://pecl.php.net/package/amqp
@@ -265,6 +265,9 @@ fi
 
 
 %changelog
+* Tue Aug 02 2016 Carl George <carl.george@rackspace.com> - 1.7.1-1.ius
+- Latest upstream
+
 * Thu Jun 23 2016 Carl George <carl.george@rackspace.com> - 1.7.0-2.ius
 - Clean up auto-provides filters
 - Move %%post and %%postun inside conditional to avoid empty scriptlets
