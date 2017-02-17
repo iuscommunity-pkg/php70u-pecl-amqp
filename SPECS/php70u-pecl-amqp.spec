@@ -12,14 +12,13 @@
 %global pecl_name   amqp
 %global php_base    php70u
 %global ini_name    40-%{pecl_name}.ini
-#global prever      beta4
 
 %bcond_without zts
 %bcond_with tests
 
 Summary:       Communicate with any AMQP compliant server
 Name:          %{php_base}-pecl-amqp
-Version:       1.7.1
+Version:       1.8.0
 Release:       1.ius%{?dist}
 License:       PHP
 Group:         Development/Languages
@@ -132,6 +131,11 @@ extension = %{pecl_name}.so
 ;amqp.channel_max = 256
 ;amqp.frame_max = 131072
 ;amqp.heartbeat = 0
+
+;amqp.cacert = ''
+;amqp.cert = ''
+;amqp.key = ''
+;amqp.verify = ''
 EOF
 
 %if %{with zts}
@@ -244,13 +248,12 @@ exit $ret
 %if 0%{?pecl_uninstall:1}
 %postun
 if [ $1 -eq 0 ]; then
-  %{pecl_uninstall} %{pecl_name} >/dev/null || :
+    %{pecl_uninstall} %{pecl_name} >/dev/null || :
 fi
 %endif
 
 
 %files
-%{!?_licensedir:%global license %%doc}
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{pecl_xmldir}/%{pecl_name}.xml
@@ -265,6 +268,9 @@ fi
 
 
 %changelog
+* Fri Feb 17 2017 Carl George <carl.george@rackspace.com> - 1.8.0-1.ius
+- Latest upstream
+
 * Tue Aug 02 2016 Carl George <carl.george@rackspace.com> - 1.7.1-1.ius
 - Latest upstream
 
