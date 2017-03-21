@@ -10,14 +10,14 @@
 #
 
 %global pecl_name   amqp
-%global php_base    php70u
+%global php         php70u
 %global ini_name    40-%{pecl_name}.ini
 
 %bcond_without zts
 %bcond_with tests
 
 Summary:       Communicate with any AMQP compliant server
-Name:          %{php_base}-pecl-amqp
+Name:          %{php}-pecl-amqp
 Version:       1.8.0
 Release:       1.ius%{?dist}
 License:       PHP
@@ -25,8 +25,8 @@ Group:         Development/Languages
 URL:           http://pecl.php.net/package/amqp
 Source0:       http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 
-BuildRequires: %{php_base}-devel
-BuildRequires: %{php_base}-pear
+BuildRequires: %{php}-devel
+BuildRequires: %{php}-pear
 BuildRequires: librabbitmq-devel >= 0.5.2
 %if %{with tests}
 # https://github.com/pdezwart/php-amqp/pull/234
@@ -38,8 +38,8 @@ BuildRequires: hostname
 
 Requires:      php(zend-abi) = %{php_zend_api}
 Requires:      php(api) = %{php_core_api}
-Requires(post):   %{php_base}-pear
-Requires(postun): %{php_base}-pear
+Requires(post):   %{php}-pear
+Requires(postun): %{php}-pear
 
 # provide the stock name
 Provides:      php-pecl-%{pecl_name} = %{version}
@@ -48,14 +48,14 @@ Provides:      php-pecl-%{pecl_name}%{?_isa} = %{version}
 # provide the stock and IUS names without pecl
 Provides:      php-%{pecl_name} = %{version}
 Provides:      php-%{pecl_name}%{?_isa} = %{version}
-Provides:      %{php_base}-%{pecl_name} = %{version}
-Provides:      %{php_base}-%{pecl_name}%{?_isa} = %{version}
+Provides:      %{php}-%{pecl_name} = %{version}
+Provides:      %{php}-%{pecl_name}%{?_isa} = %{version}
 
 # provide the stock and IUS names in pecl() format
 Provides:      php-pecl(%{pecl_name}) = %{version}
 Provides:      php-pecl(%{pecl_name})%{?_isa} = %{version}
-Provides:      %{php_base}-pecl(%{pecl_name}) = %{version}
-Provides:      %{php_base}-pecl(%{pecl_name})%{?_isa} = %{version}
+Provides:      %{php}-pecl(%{pecl_name}) = %{version}
+Provides:      %{php}-pecl(%{pecl_name})%{?_isa} = %{version}
 
 # conflict with the stock name
 Conflicts:     php-pecl-%{pecl_name} < %{version}
